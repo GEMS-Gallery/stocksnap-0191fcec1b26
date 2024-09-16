@@ -12,33 +12,25 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-icon" data-feather="activity" id="activities-icon"></div>
-            <div class="sidebar-icon" data-feather="grid"></div>
-            <div class="sidebar-icon" data-feather="bar-chart-2"></div>
-            <div class="sidebar-icon" data-feather="mail"></div>
-            <div class="sidebar-icon" data-feather="folder"></div>
-            <div class="sidebar-icon" data-feather="settings" id="settings-icon"></div>
+            <div class="sidebar-icon" data-feather="activity" id="activity-icon" data-page="activity"></div>
+            <div class="sidebar-icon" data-feather="pie-chart" id="holdings-icon" data-page="holdings"></div>
+            <div class="sidebar-icon" data-feather="settings" id="settings-icon" data-page="settings"></div>
         </div>
         <div class="main-content">
-            <div class="header">
-                <h1>Activity</h1>
-                <div class="button-group">
-                    <button class="add-asset-btn" id="add-manually-btn">
-                        <i data-feather="plus"></i>
-                        Add Manually
-                    </button>
-                    <button class="upload-csv-btn" id="upload-csv-btn">
-                        <i data-feather="upload"></i>
-                        Upload CSV
-                    </button>
+            <div id="activity-page" class="page">
+                <div class="header">
+                    <h1>Activity</h1>
+                    <div class="button-group">
+                        <button class="add-asset-btn" id="add-manually-btn">
+                            <i data-feather="plus"></i>
+                            Add Manually
+                        </button>
+                        <button class="upload-csv-btn" id="upload-csv-btn">
+                            <i data-feather="upload"></i>
+                            Upload CSV
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="tabs">
-                <span class="tab active" id="activity-tab">Activity</span>
-                <span class="tab" id="allocations-tab">Allocations</span>
-                <span class="tab" id="settings-tab">Settings</span>
-            </div>
-            <div id="activity-page" class="active">
                 <table class="activity-table">
                     <thead>
                         <tr>
@@ -56,7 +48,8 @@
                     </tbody>
                 </table>
             </div>
-            <div id="allocations-page">
+            <div id="holdings-page" class="page">
+                <h1>Holdings</h1>
                 <div class="charts-container">
                     <div class="chart-card">
                         <h3>Allocation</h3>
@@ -81,8 +74,8 @@
                     <!-- Holdings grid items will be dynamically inserted here -->
                 </div>
             </div>
-            <div id="settings-page">
-                <h2>General Settings</h2>
+            <div id="settings-page" class="page">
+                <h1>Settings</h1>
                 <div class="setting-item">
                     <label for="base-currency">Base Currency:</label>
                     <select id="base-currency">

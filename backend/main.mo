@@ -91,7 +91,8 @@ actor {
   };
 
   public func setBaseCurrency(currency: Text) : async () {
-    baseCurrency := currency;};
+    baseCurrency := currency;
+  };
 
   public query func getBaseCurrency() : async Text {
     baseCurrency
@@ -107,7 +108,7 @@ actor {
         let month = textToNat(dateParts[1]);
         let day = textToNat(dateParts[2]);
         // This is a very rough approximation. Use a proper date library for accurate results.
-        return (year * 365 * 24 * 3600 + month * 30 * 24 * 3600 + day * 24 * 3600) * 1_000_000_000;
+        return(year * 365 * 24 * 3600 + month * 30 * 24 * 3600 + day * 24 * 3600) * 1_000_000_000;
       };
     };
     return 0; // Return 0 if conversion fails

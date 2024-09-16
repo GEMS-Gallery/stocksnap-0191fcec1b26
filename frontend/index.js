@@ -111,8 +111,8 @@ const chartOptions = {
 };
 
 function showPage(pageName) {
-    const pages = document.querySelectorAll('#activity-page, #allocations-page, #settings-page');
-    const tabs = document.querySelectorAll('.tab');
+    const pages = document.querySelectorAll('.page');
+    const icons = document.querySelectorAll('.sidebar-icon');
     
     pages.forEach(page => {
         page.classList.remove('active');
@@ -121,18 +121,18 @@ function showPage(pageName) {
         }
     });
 
-    tabs.forEach(tab => {
-        tab.classList.remove('active');
-        if (tab.id === `${pageName}-tab`) {
-            tab.classList.add('active');
+    icons.forEach(icon => {
+        icon.classList.remove('active');
+        if (icon.dataset.page === pageName) {
+            icon.classList.add('active');
         }
     });
 }
 
-// Add event listeners for tabs
-document.getElementById('activity-tab').addEventListener('click', () => showPage('activity'));
-document.getElementById('allocations-tab').addEventListener('click', () => showPage('allocations'));
-document.getElementById('settings-tab').addEventListener('click', () => showPage('settings'));
+// Add event listeners for sidebar icons
+document.querySelectorAll('.sidebar-icon').forEach(icon => {
+    icon.addEventListener('click', () => showPage(icon.dataset.page));
+});
 
 // Add Manually Modal
 const addManuallyModal = document.getElementById("add-manually-modal");
@@ -285,5 +285,6 @@ document.getElementById('save-settings').addEventListener('click', async () => {
     }
 });
 
-// Initial data fetch
+// Initial data fetch and page setup
 fetchData();
+showPage('activity'); // Set initial page to Activity

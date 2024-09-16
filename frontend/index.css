@@ -23,6 +23,10 @@ body, html {
     margin-bottom: 30px;
     color: #757575;
     cursor: pointer;
+    transition: color 0.3s ease;
+}
+.sidebar-icon:hover, .sidebar-icon.active {
+    color: #333;
 }
 .main-content {
     flex-grow: 1;
@@ -53,22 +57,11 @@ body, html {
 .add-asset-btn svg, .upload-csv-btn svg {
     margin-right: 8px;
 }
-.tabs {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+.page {
+    display: none;
 }
-.tab {
-    margin-right: 20px;
-    color: #757575;
-    text-decoration: none;
-    padding-bottom: 10px;
-    display: inline-block;
-    cursor: pointer;
-}
-.tab.active {
-    color: #333;
-    font-weight: 500;
-    border-bottom: 2px solid #333;
+.page.active {
+    display: block;
 }
 .charts-container {
     display: flex;
@@ -152,12 +145,6 @@ body, html {
 .activity-type.DEPOSIT, .activity-type.TRANSFER_IN, .activity-type.CONVERSION_IN { background-color: #f3e5f5; color: #9c27b0; }
 .activity-type.WITHDRAWAL, .activity-type.TRANSFER_OUT, .activity-type.CONVERSION_OUT { background-color: #fce4ec; color: #e91e63; }
 .activity-type.FEE, .activity-type.TAX { background-color: #efebe9; color: #795548; }
-#activity-page, #allocations-page, #settings-page {
-    display: none;
-}
-#activity-page.active, #allocations-page.active, #settings-page.active {
-    display: block;
-}
 .modal {
     display: none;
     position: fixed;
