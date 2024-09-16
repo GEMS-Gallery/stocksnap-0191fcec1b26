@@ -81,9 +81,23 @@
             <span class="close">&times;</span>
             <h2>Add New Asset</h2>
             <form id="add-asset-form">
-                <input type="text" id="symbol-input" placeholder="Stock Symbol" required>
-                <input type="number" id="quantity-input" placeholder="Quantity" step="0.01" required>
-                <input type="number" id="purchase-price-input" placeholder="Purchase Price" step="0.01" required>
+                <select id="transaction-type" required>
+                    <option value="">Select Transaction Type</option>
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                    <option value="deposit">Deposit</option>
+                    <option value="withdrawal">Withdrawal</option>
+                    <option value="dividend">Dividend</option>
+                    <option value="interest">Interest</option>
+                    <option value="fee">Fee</option>
+                </select>
+                <input type="date" id="transaction-date" required>
+                <div class="autocomplete">
+                    <input type="text" id="symbol-input" placeholder="Stock Symbol" required>
+                </div>
+                <input type="number" id="shares-input" placeholder="Shares" step="0.01" required>
+                <input type="number" id="price-input" placeholder="Price" step="0.01" required>
+                <input type="number" id="fee-input" placeholder="Fee" step="0.01" required>
                 <button type="submit">Add Asset</button>
             </form>
         </div>

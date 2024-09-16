@@ -11,9 +11,32 @@ export interface Holding {
   'assetType' : string,
   'symbol' : string,
 }
+export interface Transaction {
+  'fee' : number,
+  'currentPrice' : number,
+  'shares' : number,
+  'transactionType' : string,
+  'date' : bigint,
+  'name' : string,
+  'sector' : string,
+  'assetType' : string,
+  'price' : number,
+  'symbol' : string,
+}
 export interface _SERVICE {
-  'addHolding' : ActorMethod<
-    [string, string, number, number, number, string, string],
+  'addTransaction' : ActorMethod<
+    [
+      string,
+      string,
+      string,
+      string,
+      number,
+      number,
+      number,
+      number,
+      string,
+      string,
+    ],
     undefined
   >,
   'getAllocations' : ActorMethod<
@@ -26,6 +49,7 @@ export interface _SERVICE {
     }
   >,
   'getHoldings' : ActorMethod<[], Array<Holding>>,
+  'getTransactions' : ActorMethod<[], Array<Transaction>>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];
