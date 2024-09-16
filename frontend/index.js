@@ -25,26 +25,43 @@ function updateUI() {
     updateCurrencyDisplay();
 }
 
-function updateActivityTable() {
+async function getCompanyName(symbol) {
+    try {
+        const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
+        const data = await response.json();
+        return data.name || symbol;
+    } catch (error) {
+        console.error("Error fetching company name:", error);
+        return symbol;
+    }
+}
+
+function formatDate(timestamp) {
+    const date = new Date(Number(timestamp) / 1000000);
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+async function updateActivityTable() {
     const tableBody = document.getElementById('activity-table-body');
     tableBody.innerHTML = '';
     
-    activities.forEach(activity => {
+    for (const activity of activities) {
         const row = document.createElement('tr');
-        const date = new Date(Number(activity.date) / 1000000); // Convert BigInt to number
         const value = activity.shares * activity.price;
+        const companyName = await getCompanyName(activity.symbol);
         row.innerHTML = `
-            <td>${date.toLocaleString()}</td>
+            <td>${formatDate(activity.date)}</td>
             <td><span class="activity-type ${activity.activityType}">${activity.activityType}</span></td>
-            <td>${activity.account}</td>
-            <td>${activity.symbol}</td>
+            <td>${activity.symbol} - ${companyName}</td>
             <td>${activity.shares.toFixed(4)}</td>
             <td>${activity.price.toFixed(2)} ${baseCurrency}</td>
             <td>${activity.fee.toFixed(2)} ${baseCurrency}</td>
             <td>${value.toFixed(2)} ${baseCurrency}</td>
+            <td>${activity.account}</td>
         `;
         tableBody.appendChild(row);
-    });
+    }
 }
 
 function updateHoldingsGrid() {

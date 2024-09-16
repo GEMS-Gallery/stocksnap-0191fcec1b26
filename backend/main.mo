@@ -96,16 +96,13 @@ actor {
 
   func textToTimestamp(dateText: Text) : Int {
     // This is a simplified conversion. You might want to use a proper date library.
-    let parts = Iter.toArray(Text.split(dateText, #text("T")));
-    if (parts.size() == 2) {
-      let dateParts = Iter.toArray(Text.split(parts[0], #text("-")));
-      if (dateParts.size() == 3) {
-        let year = textToNat(dateParts[0]);
-        let month = textToNat(dateParts[1]);
-        let day = textToNat(dateParts[2]);
-        // This is a very rough approximation. Use a proper date library for accurate results.
-        return (year * 365 * 24 * 3600 + month * 30 * 24 * 3600 + day * 24 * 3600) * 1_000_000_000;
-      };
+    let parts = Iter.toArray(Text.split(dateText, #text("-")));
+    if (parts.size() == 3) {
+      let year = textToNat(parts[0]);
+      let month = textToNat(parts[1]);
+      let day = textToNat(parts[2]);
+      // This is a very rough approximation. Use a proper date library for accurate results.
+      return (year * 365 * 24 * 3600 + month * 30 * 24 * 3600 + day * 24 * 3600) * 1_000_000_000;
     };
     return 0; // Return 0 if conversion fails
   };
