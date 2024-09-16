@@ -8,6 +8,7 @@ feather.replace();
 
 let holdings = [];
 let allocations = {};
+let charts = {};
 
 async function fetchData() {
     holdings = await backend.getHoldings();
@@ -71,7 +72,10 @@ function updateCharts() {
 
 function updateAllocationChart() {
     const ctx = document.getElementById('allocationChart').getContext('2d');
-    new Chart(ctx, {
+    if (charts.allocation) {
+        charts.allocation.destroy();
+    }
+    charts.allocation = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Equity', 'Fixed Income', 'Cash', 'Crypto'],
@@ -91,10 +95,12 @@ function updateAllocationChart() {
 
 function updateClassesChart() {
     // Implement this function based on your data structure
+    // Remember to destroy existing chart before creating a new one
 }
 
 function updateSectorsChart() {
     // Implement this function based on your data structure
+    // Remember to destroy existing chart before creating a new one
 }
 
 const chartOptions = {
@@ -167,7 +173,16 @@ document.getElementById("add-asset-form").addEventListener("submit", async funct
             fetchCompanyProfile(symbol)
         ]);
 
-        await backend.addHolding(symbol, companyData.name, quantity, purchasePrice, quoteData.c, "Equity", companyData.finnhubIndustry);
+        if (!quoteData || !companyData) {
+            throw new Error("Failed to fetch stock data");
+        }
+
+        const name = companyData.name || "Unknown";
+        const currentPrice = quoteData.c || 0;
+        const assetType = "Equity";
+        const sector = companyData.finnhubIndustry || "Unknown";
+
+        await backend.addHolding(symbol, name, quantity, purchasePrice, currentPrice, assetType, sector);
         
         modal.style.display = "none";
         fetchData(); // Refresh the data
@@ -178,13 +193,29 @@ document.getElementById("add-asset-form").addEventListener("submit", async funct
 });
 
 async function fetchQuote(symbol) {
-    const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${API_KEY}`);
-    return response.json();
+    try {
+        const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching quote:", error);
+        return null;
+    }
 }
 
 async function fetchCompanyProfile(symbol) {
-    const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
-    return response.json();
+    try {
+        const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching company profile:", error);
+        return null;
+    }
 }
 
 // Initial data fetch

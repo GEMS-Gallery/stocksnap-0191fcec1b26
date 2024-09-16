@@ -57,10 +57,10 @@ actor {
 
     let total = equity + fixedIncome + cash + crypto;
     {
-      equity = equity / total * 100;
-      fixedIncome = fixedIncome / total * 100;
-      cash = cash / total * 100;
-      crypto = crypto / total * 100;
+      equity = if (total > 0) equity / total * 100 else 0;
+      fixedIncome = if (total > 0) fixedIncome / total * 100 else 0;
+      cash = if (total > 0) cash / total * 100 else 0;
+      crypto = if (total > 0) crypto / total * 100 else 0;
     }
   };
 
