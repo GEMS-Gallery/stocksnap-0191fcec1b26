@@ -1,79 +1,132 @@
 import { backend } from "declarations/backend";
 
-const API_KEY = "crjpakpr01qnnbrso6l0crjpakpr01qnnbrso6lg";
-const BASE_URL = "https://finnhub.io/api/v1";
+// Initialize Feather Icons
+feather.replace();
 
-let currentSymbol = "";
-let currentPrice = 0;
+let holdings = [];
+let allocations = {};
 
-document.getElementById("stockForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const symbol = document.getElementById("symbolInput").value.toUpperCase();
-    currentSymbol = symbol;
-    try {
-        const [quoteData, companyData] = await Promise.all([
-            fetchQuote(symbol),
-            fetchCompanyProfile(symbol)
-        ]);
-        currentPrice = quoteData.c;
-        displayStockInfo(quoteData, companyData);
-        document.getElementById("addHolding").style.display = "block";
-    } catch (error) {
-        console.error("Error fetching stock data:", error);
-        document.getElementById("stockInfo").innerHTML = "Error fetching stock data. Please try again.";
-        document.getElementById("addHolding").style.display = "none";
+async function fetchData() {
+    holdings = await backend.getHoldings();
+    allocations = await backend.getAllocations();
+    updateUI();
+}
+
+function updateUI() {
+    updateHoldingsTable();
+    updateHoldingsGrid();
+    updateCharts();
+}
+
+function updateHoldingsTable() {
+    const tableBody = document.getElementById('holdings-table-body');
+    tableBody.innerHTML = '';
+    
+    holdings.forEach(holding => {
+        const row = document.createElement('tr');
+        const marketValue = holding.quantity * holding.currentPrice;
+        const performance = ((holding.currentPrice - holding.purchasePrice) / holding.purchasePrice) * 100;
+        const performanceValue = (marketValue - (holding.quantity * holding.purchasePrice));
+        
+        row.innerHTML = `
+            <td><span class="stock-symbol">${holding.symbol}</span> ${holding.name}</td>
+            <td>${holding.quantity.toFixed(4)}</td>
+            <td>$${marketValue.toFixed(2)}</td>
+            <td>$${holding.currentPrice.toFixed(2)}</td>
+            <td class="${performance >= 0 ? 'positive' : 'negative'}">
+                ${performance.toFixed(2)}%<br>$${performanceValue.toFixed(2)}
+            </td>
+            <td>${holding.assetType}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function updateHoldingsGrid() {
+    const grid = document.getElementById('holdings-grid');
+    grid.innerHTML = '';
+    
+    holdings.forEach(holding => {
+        const performance = ((holding.currentPrice - holding.purchasePrice) / holding.purchasePrice) * 100;
+        const div = document.createElement('div');
+        div.className = `holding-item ${performance >= 0 ? '' : 'negative'}`;
+        div.innerHTML = `
+            <div>${holding.symbol}</div>
+            <div class="performance ${performance >= 0 ? 'positive' : 'negative'}">
+                ${performance >= 0 ? '+' : ''}${performance.toFixed(2)}%
+            </div>
+        `;
+        grid.appendChild(div);
+    });
+}
+
+function updateCharts() {
+    updateAllocationChart();
+    updateClassesChart();
+    updateSectorsChart();
+}
+
+function updateAllocationChart() {
+    const ctx = document.getElementById('allocationChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Equity', 'Fixed Income', 'Cash', 'Crypto'],
+            datasets: [{
+                data: [
+                    allocations.equity,
+                    allocations.fixedIncome,
+                    allocations.cash,
+                    allocations.crypto
+                ],
+                backgroundColor: ['#2c3e50', '#34495e', '#7f8c8d', '#95a5a6']
+            }]
+        },
+        options: chartOptions
+    });
+}
+
+function updateClassesChart() {
+    // Implement this function based on your data structure
+}
+
+function updateSectorsChart() {
+    // Implement this function based on your data structure
+}
+
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            position: 'right',
+            labels: {
+                font: {
+                    family: 'Inter'
+                }
+            }
+        }
     }
-});
+};
 
-document.getElementById("addHoldingBtn").addEventListener("click", async () => {
-    const quantity = parseFloat(document.getElementById("quantityInput").value);
-    const purchasePrice = parseFloat(document.getElementById("purchasePriceInput").value);
-    if (quantity > 0 && purchasePrice > 0) {
-        await backend.addHolding(currentSymbol, quantity, purchasePrice);
-        document.getElementById("quantityInput").value = "";
-        document.getElementById("purchasePriceInput").value = "";
-        updateHoldings();
-    }
-});
+function showPage(pageName) {
+    const pages = document.querySelectorAll('#holdings-page, #allocations-page');
+    const tabs = document.querySelectorAll('.tab');
+    
+    pages.forEach(page => {
+        page.classList.remove('active');
+        if (page.id === `${pageName}-page`) {
+            page.classList.add('active');
+        }
+    });
 
-async function fetchQuote(symbol) {
-    const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${API_KEY}`);
-    return response.json();
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.textContent.toLowerCase() === pageName) {
+            tab.classList.add('active');
+        }
+    });
 }
 
-async function fetchCompanyProfile(symbol) {
-    const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
-    return response.json();
-}
-
-function displayStockInfo(quoteData, companyData) {
-    const stockInfo = document.getElementById("stockInfo");
-    stockInfo.innerHTML = `
-        <h2>${companyData.name} (${currentSymbol})</h2>
-        <p>Current Price: $${quoteData.c.toFixed(2)}</p>
-        <p>Change: ${quoteData.d.toFixed(2)} (${quoteData.dp.toFixed(2)}%)</p>
-    `;
-}
-
-async function updateHoldings() {
-    const holdings = await backend.getHoldings();
-    const holdingsDiv = document.getElementById("holdings");
-    if (holdings.length === 0) {
-        holdingsDiv.innerHTML = "<p>No holdings yet.</p>";
-    } else {
-        const holdingsList = holdings.map(([symbol, holding]) => {
-            const currentValue = holding.quantity * currentPrice;
-            const purchaseValue = holding.quantity * holding.purchasePrice;
-            const performance = ((currentValue - purchaseValue) / purchaseValue) * 100;
-            return `<li>
-                ${symbol}: ${holding.quantity.toFixed(2)} shares
-                <br>Purchase Price: $${holding.purchasePrice.toFixed(2)}
-                <br>Current Value: $${currentValue.toFixed(2)}
-                <br>Performance: ${performance.toFixed(2)}%
-            </li>`;
-        }).join("");
-        holdingsDiv.innerHTML = `<ul>${holdingsList}</ul>`;
-    }
-}
-
-updateHoldings();
+// Initial data fetch
+fetchData();

@@ -9,30 +9,59 @@ import Text "mo:base/Text";
 
 actor {
   type Holding = {
+    symbol: Text;
+    name: Text;
     quantity: Float;
     purchasePrice: Float;
+    currentPrice: Float;
+    assetType: Text;
+    sector: Text;
   };
 
   stable var holdingsEntries : [(Text, Holding)] = [];
   let holdings = HashMap.HashMap<Text, Holding>(10, Text.equal, Text.hash);
 
-  public func addHolding(symbol: Text, quantity: Float, purchasePrice: Float) : async () {
-    let currentHolding = holdings.get(symbol);
-    let (newQuantity, newPurchasePrice) = switch (currentHolding) {
-      case (null) {
-        (quantity, purchasePrice)
-      };
-      case (?existing) {
-        let totalQuantity = existing.quantity + quantity;
-        let totalValue = existing.quantity * existing.purchasePrice + quantity * purchasePrice;
-        (totalQuantity, totalValue / totalQuantity)
-      };
+  public func addHolding(symbol: Text, name: Text, quantity: Float, purchasePrice: Float, currentPrice: Float, assetType: Text, sector: Text) : async () {
+    let newHolding : Holding = {
+      symbol = symbol;
+      name = name;
+      quantity = quantity;
+      purchasePrice = purchasePrice;
+      currentPrice = currentPrice;
+      assetType = assetType;
+      sector = sector;
     };
-    holdings.put(symbol, { quantity = newQuantity; purchasePrice = newPurchasePrice });
+    holdings.put(symbol, newHolding);
   };
 
-  public query func getHoldings() : async [(Text, Holding)] {
-    Iter.toArray(holdings.entries())
+  public query func getHoldings() : async [Holding] {
+    Iter.toArray(holdings.vals())
+  };
+
+  public query func getAllocations() : async {equity: Float; fixedIncome: Float; cash: Float; crypto: Float} {
+    var equity : Float = 0;
+    var fixedIncome : Float = 0;
+    var cash : Float = 0;
+    var crypto : Float = 0;
+
+    for (holding in holdings.vals()) {
+      let value = holding.quantity * holding.currentPrice;
+      switch (holding.assetType) {
+        case "Equity" { equity += value };
+        case "Fixed Income" { fixedIncome += value };
+        case "Cash" { cash += value };
+        case "Crypto" { crypto += value };
+        case _ {};
+      };
+    };
+
+    let total = equity + fixedIncome + cash + crypto;
+    {
+      equity = equity / total * 100;
+      fixedIncome = fixedIncome / total * 100;
+      cash = cash / total * 100;
+      crypto = crypto / total * 100;
+    }
   };
 
   system func preupgrade() {
