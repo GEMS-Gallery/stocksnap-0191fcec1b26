@@ -122,11 +122,15 @@ function showPage(pageName) {
 
     tabs.forEach(tab => {
         tab.classList.remove('active');
-        if (tab.textContent.toLowerCase() === pageName) {
+        if (tab.id === `${pageName}-tab`) {
             tab.classList.add('active');
         }
     });
 }
+
+// Add event listeners for tabs
+document.getElementById('holdings-tab').addEventListener('click', () => showPage('holdings'));
+document.getElementById('allocations-tab').addEventListener('click', () => showPage('allocations'));
 
 // Initial data fetch
 fetchData();
