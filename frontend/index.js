@@ -76,7 +76,7 @@ function updateAllocationChart() {
                     allocations.cash,
                     allocations.crypto
                 ],
-                backgroundColor: ['#2c3e50', '#34495e', '#7f8c8d', '#95a5a6']
+                backgroundColor: ['#333', '#555', '#777', '#999']
             }]
         },
         options: chartOptions
@@ -104,8 +104,9 @@ const chartOptions = {
             position: 'right',
             labels: {
                 font: {
-                    family: 'Inter'
-                }
+                    family: 'Roboto Mono'
+                },
+                color: '#000'
             }
         }
     }
