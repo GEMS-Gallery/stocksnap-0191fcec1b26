@@ -20,30 +20,37 @@
         </div>
         <div class="main-content">
             <div class="header">
-                <h1>Holdings</h1>
-                <button class="add-asset-btn" id="add-asset-btn">
-                    <i data-feather="plus"></i>
-                    Add Asset
-                </button>
+                <h1>Activity</h1>
+                <div class="button-group">
+                    <button class="add-asset-btn" id="add-manually-btn">
+                        <i data-feather="plus"></i>
+                        Add Manually
+                    </button>
+                    <button class="upload-csv-btn" id="upload-csv-btn">
+                        <i data-feather="upload"></i>
+                        Upload CSV
+                    </button>
+                </div>
             </div>
             <div class="tabs">
-                <span class="tab" id="holdings-tab">Holdings</span>
+                <span class="tab" id="activity-tab">Activity</span>
                 <span class="tab active" id="allocations-tab">Allocations</span>
             </div>
-            <div id="holdings-page">
-                <table class="holdings-table">
+            <div id="activity-page">
+                <table class="activity-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Date</th>
+                            <th>Symbol</th>
+                            <th>Activity Type</th>
                             <th>Quantity</th>
-                            <th>Market Value</th>
-                            <th>Market Price</th>
-                            <th>Performance</th>
-                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Currency</th>
+                            <th>Fee</th>
                         </tr>
                     </thead>
-                    <tbody id="holdings-table-body">
-                        <!-- Holdings will be dynamically inserted here -->
+                    <tbody id="activity-table-body">
+                        <!-- Activities will be dynamically inserted here -->
                     </tbody>
                 </table>
             </div>
@@ -75,31 +82,83 @@
         </div>
     </div>
 
-    <!-- Add Asset Modal -->
-    <div id="add-asset-modal" class="modal">
+    <!-- Add Manually Modal -->
+    <div id="add-manually-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Add New Asset</h2>
-            <form id="add-asset-form">
-                <select id="transaction-type" required>
-                    <option value="">Select Transaction Type</option>
-                    <option value="buy">Buy</option>
-                    <option value="sell">Sell</option>
-                    <option value="deposit">Deposit</option>
-                    <option value="withdrawal">Withdrawal</option>
-                    <option value="dividend">Dividend</option>
-                    <option value="interest">Interest</option>
-                    <option value="fee">Fee</option>
+            <h2>Add New Activity</h2>
+            <form id="add-activity-form">
+                <input type="datetime-local" id="activity-date" required>
+                <input type="text" id="symbol-input" placeholder="Symbol" required>
+                <input type="number" id="quantity-input" placeholder="Quantity" step="0.01" required>
+                <select id="activity-type" required>
+                    <option value="">Select Activity Type</option>
+                    <option value="BUY">Buy</option>
+                    <option value="SELL">Sell</option>
+                    <option value="DIVIDEND">Dividend</option>
+                    <option value="INTEREST">Interest</option>
+                    <option value="DEPOSIT">Deposit</option>
+                    <option value="WITHDRAWAL">Withdrawal</option>
+                    <option value="TRANSFER_IN">Transfer In</option>
+                    <option value="TRANSFER_OUT">Transfer Out</option>
+                    <option value="CONVERSION_IN">Conversion In</option>
+                    <option value="CONVERSION_OUT">Conversion Out</option>
+                    <option value="FEE">Fee</option>
+                    <option value="TAX">Tax</option>
                 </select>
-                <input type="date" id="transaction-date" required>
-                <div class="autocomplete">
-                    <input type="text" id="symbol-input" placeholder="Stock Symbol" required>
-                </div>
-                <input type="number" id="shares-input" placeholder="Shares" step="0.01" required>
-                <input type="number" id="price-input" placeholder="Price" step="0.01" required>
+                <input type="number" id="price-input" placeholder="Unit Price" step="0.01" required>
+                <input type="text" id="currency-input" placeholder="Currency" required>
                 <input type="number" id="fee-input" placeholder="Fee" step="0.01" required>
-                <button type="submit">Add Asset</button>
+                <button type="submit">Add Activity</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Upload CSV Modal -->
+    <div id="upload-csv-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Upload CSV</h2>
+            <div class="csv-instructions">
+                <h3>Importing Account Activities</h3>
+                <p>Follow these steps to import your account activities from a CSV file:</p>
+                <ol>
+                    <li>Ensure your CSV file is in the correct format.</li>
+                    <li>Columns should include date, symbol, quantity, activityType, unitPrice, currency, fee</li>
+                    <li>Click the 'Import' button and select your CSV file.</li>
+                    <li>Review the imported activities before confirming.</li>
+                </ol>
+                <h4>Supported Activity Types:</h4>
+                <ul>
+                    <li>BUY</li>
+                    <li>SELL</li>
+                    <li>DIVIDEND</li>
+                    <li>INTEREST</li>
+                    <li>DEPOSIT</li>
+                    <li>WITHDRAWAL</li>
+                    <li>TRANSFER_IN (same as deposit)</li>
+                    <li>TRANSFER_OUT (same as withdrawal)</li>
+                    <li>CONVERSION_IN (same as deposit)</li>
+                    <li>CONVERSION_OUT (same as withdrawal)</li>
+                    <li>FEE</li>
+                    <li>TAX</li>
+                </ul>
+                <h4>Example CSV format:</h4>
+                <pre>
+date,symbol,quantity,activityType,unitPrice,currency,fee
+2024-01-01T15:02:36.329Z,MSFT,1,DIVIDEND,57.5,USD,0
+2023-12-15T15:02:36.329Z,MSFT,30,BUY,368.6046511627907,USD,0
+2023-08-11T14:55:30.863Z,$CASH-USD,600.03,DEPOSIT,1,USD,0
+2023-06-05T09:15:22.456Z,$CASH-USD,1,INTEREST,180.5,USD,0
+2023-05-18T13:45:30.789Z,GOOGL,5,SELL,2500.75,USD,10
+2023-04-02T11:20:15.321Z,$CASH-USD,1000,WITHDRAWAL,1,USD,0
+                </pre>
+            </div>
+            <div id="csv-drop-zone" class="csv-drop-zone">
+                <p>Drag and drop your CSV file here, or click to select a file</p>
+                <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+            </div>
+            <button id="import-csv-btn" disabled>Import CSV</button>
         </div>
     </div>
 

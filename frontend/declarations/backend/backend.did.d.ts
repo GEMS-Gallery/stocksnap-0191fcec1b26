@@ -2,43 +2,21 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
-export interface Holding {
-  'currentPrice' : number,
-  'purchasePrice' : number,
-  'name' : string,
-  'sector' : string,
-  'quantity' : number,
-  'assetType' : string,
-  'symbol' : string,
-}
-export interface Transaction {
+export interface Activity {
   'fee' : number,
-  'currentPrice' : number,
-  'shares' : number,
-  'transactionType' : string,
+  'activityType' : string,
   'date' : bigint,
-  'name' : string,
-  'sector' : string,
-  'assetType' : string,
-  'price' : number,
+  'currency' : string,
+  'quantity' : number,
+  'unitPrice' : number,
   'symbol' : string,
 }
 export interface _SERVICE {
-  'addTransaction' : ActorMethod<
-    [
-      string,
-      string,
-      string,
-      string,
-      number,
-      number,
-      number,
-      number,
-      string,
-      string,
-    ],
+  'addActivity' : ActorMethod<
+    [string, string, number, string, number, string, number],
     undefined
   >,
+  'getActivities' : ActorMethod<[], Array<Activity>>,
   'getAllocations' : ActorMethod<
     [],
     {
@@ -48,8 +26,7 @@ export interface _SERVICE {
       'equity' : number,
     }
   >,
-  'getHoldings' : ActorMethod<[], Array<Holding>>,
-  'getTransactions' : ActorMethod<[], Array<Transaction>>,
+  'importActivities' : ActorMethod<[Array<Activity>], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

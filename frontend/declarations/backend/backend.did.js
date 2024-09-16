@@ -1,42 +1,28 @@
 export const idlFactory = ({ IDL }) => {
-  const Holding = IDL.Record({
-    'currentPrice' : IDL.Float64,
-    'purchasePrice' : IDL.Float64,
-    'name' : IDL.Text,
-    'sector' : IDL.Text,
-    'quantity' : IDL.Float64,
-    'assetType' : IDL.Text,
-    'symbol' : IDL.Text,
-  });
-  const Transaction = IDL.Record({
+  const Activity = IDL.Record({
     'fee' : IDL.Float64,
-    'currentPrice' : IDL.Float64,
-    'shares' : IDL.Float64,
-    'transactionType' : IDL.Text,
+    'activityType' : IDL.Text,
     'date' : IDL.Int,
-    'name' : IDL.Text,
-    'sector' : IDL.Text,
-    'assetType' : IDL.Text,
-    'price' : IDL.Float64,
+    'currency' : IDL.Text,
+    'quantity' : IDL.Float64,
+    'unitPrice' : IDL.Float64,
     'symbol' : IDL.Text,
   });
   return IDL.Service({
-    'addTransaction' : IDL.Func(
+    'addActivity' : IDL.Func(
         [
           IDL.Text,
           IDL.Text,
-          IDL.Text,
-          IDL.Text,
-          IDL.Float64,
-          IDL.Float64,
-          IDL.Float64,
           IDL.Float64,
           IDL.Text,
+          IDL.Float64,
           IDL.Text,
+          IDL.Float64,
         ],
         [],
         [],
       ),
+    'getActivities' : IDL.Func([], [IDL.Vec(Activity)], ['query']),
     'getAllocations' : IDL.Func(
         [],
         [
@@ -49,8 +35,7 @@ export const idlFactory = ({ IDL }) => {
         ],
         ['query'],
       ),
-    'getHoldings' : IDL.Func([], [IDL.Vec(Holding)], ['query']),
-    'getTransactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
+    'importActivities' : IDL.Func([IDL.Vec(Activity)], [], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

@@ -6,41 +6,36 @@ const BASE_URL = "https://finnhub.io/api/v1";
 // Initialize Feather Icons
 feather.replace();
 
-let holdings = [];
+let activities = [];
 let allocations = {};
 let charts = {};
 
 async function fetchData() {
-    holdings = await backend.getHoldings();
+    activities = await backend.getActivities();
     allocations = await backend.getAllocations();
     updateUI();
 }
 
 function updateUI() {
-    updateHoldingsTable();
+    updateActivityTable();
     updateHoldingsGrid();
     updateCharts();
 }
 
-function updateHoldingsTable() {
-    const tableBody = document.getElementById('holdings-table-body');
+function updateActivityTable() {
+    const tableBody = document.getElementById('activity-table-body');
     tableBody.innerHTML = '';
     
-    holdings.forEach(holding => {
+    activities.forEach(activity => {
         const row = document.createElement('tr');
-        const marketValue = holding.quantity * holding.currentPrice;
-        const performance = ((holding.currentPrice - holding.purchasePrice) / holding.purchasePrice) * 100;
-        const performanceValue = (marketValue - (holding.quantity * holding.purchasePrice));
-        
         row.innerHTML = `
-            <td><span class="stock-symbol">${holding.symbol}</span> ${holding.name}</td>
-            <td>${holding.quantity.toFixed(4)}</td>
-            <td>$${marketValue.toFixed(2)}</td>
-            <td>$${holding.currentPrice.toFixed(2)}</td>
-            <td class="${performance >= 0 ? 'positive' : 'negative'}">
-                ${performance.toFixed(2)}%<br>$${performanceValue.toFixed(2)}
-            </td>
-            <td>${holding.assetType}</td>
+            <td>${new Date(activity.date / 1000000).toLocaleString()}</td>
+            <td>${activity.symbol}</td>
+            <td>${activity.activityType}</td>
+            <td>${activity.quantity.toFixed(4)}</td>
+            <td>${activity.unitPrice.toFixed(2)}</td>
+            <td>${activity.currency}</td>
+            <td>${activity.fee.toFixed(2)}</td>
         `;
         tableBody.appendChild(row);
     });
@@ -50,18 +45,7 @@ function updateHoldingsGrid() {
     const grid = document.getElementById('holdings-grid');
     grid.innerHTML = '';
     
-    holdings.forEach(holding => {
-        const performance = ((holding.currentPrice - holding.purchasePrice) / holding.purchasePrice) * 100;
-        const div = document.createElement('div');
-        div.className = `holding-item ${performance >= 0 ? '' : 'negative'}`;
-        div.innerHTML = `
-            <div>${holding.symbol}</div>
-            <div class="performance ${performance >= 0 ? 'positive' : 'negative'}">
-                ${performance >= 0 ? '+' : ''}${performance.toFixed(2)}%
-            </div>
-        `;
-        grid.appendChild(div);
-    });
+    // Implement this based on your holdings data structure
 }
 
 function updateCharts() {
@@ -95,12 +79,10 @@ function updateAllocationChart() {
 
 function updateClassesChart() {
     // Implement this function based on your data structure
-    // Remember to destroy existing chart before creating a new one
 }
 
 function updateSectorsChart() {
     // Implement this function based on your data structure
-    // Remember to destroy existing chart before creating a new one
 }
 
 const chartOptions = {
@@ -119,7 +101,7 @@ const chartOptions = {
 };
 
 function showPage(pageName) {
-    const pages = document.querySelectorAll('#holdings-page, #allocations-page');
+    const pages = document.querySelectorAll('#activity-page, #allocations-page');
     const tabs = document.querySelectorAll('.tab');
     
     pages.forEach(page => {
@@ -138,177 +120,144 @@ function showPage(pageName) {
 }
 
 // Add event listeners for tabs
-document.getElementById('holdings-tab').addEventListener('click', () => showPage('holdings'));
+document.getElementById('activity-tab').addEventListener('click', () => showPage('activity'));
 document.getElementById('allocations-tab').addEventListener('click', () => showPage('allocations'));
 
-// Add Asset Modal
-const modal = document.getElementById("add-asset-modal");
-const btn = document.getElementById("add-asset-btn");
-const span = document.getElementsByClassName("close")[0];
+// Add Manually Modal
+const addManuallyModal = document.getElementById("add-manually-modal");
+const addManuallyBtn = document.getElementById("add-manually-btn");
+const addManuallySpan = addManuallyModal.querySelector(".close");
 
-btn.onclick = function() {
-    modal.style.display = "block";
+addManuallyBtn.onclick = function() {
+    addManuallyModal.style.display = "block";
 }
 
-span.onclick = function() {
-    modal.style.display = "none";
+addManuallySpan.onclick = function() {
+    addManuallyModal.style.display = "none";
+}
+
+// Upload CSV Modal
+const uploadCSVModal = document.getElementById("upload-csv-modal");
+const uploadCSVBtn = document.getElementById("upload-csv-btn");
+const uploadCSVSpan = uploadCSVModal.querySelector(".close");
+
+uploadCSVBtn.onclick = function() {
+    uploadCSVModal.style.display = "block";
+}
+
+uploadCSVSpan.onclick = function() {
+    uploadCSVModal.style.display = "none";
 }
 
 window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
+    if (event.target == addManuallyModal) {
+        addManuallyModal.style.display = "none";
+    }
+    if (event.target == uploadCSVModal) {
+        uploadCSVModal.style.display = "none";
     }
 }
 
-// Autocomplete for symbol input
-function autocomplete(inp, arr) {
-    var currentFocus;
-    inp.addEventListener("input", function(e) {
-        var a, b, i, val = this.value;
-        closeAllLists();
-        if (!val) { return false;}
-        currentFocus = -1;
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        this.parentNode.appendChild(a);
-        for (i = 0; i < arr.length; i++) {
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                b = document.createElement("DIV");
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                b.addEventListener("click", function(e) {
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    closeAllLists();
-                });
-                a.appendChild(b);
-            }
-        }
-    });
-    inp.addEventListener("keydown", function(e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
-        if (e.keyCode == 40) {
-            currentFocus++;
-            addActive(x);
-        } else if (e.keyCode == 38) {
-            currentFocus--;
-            addActive(x);
-        } else if (e.keyCode == 13) {
-            e.preventDefault();
-            if (currentFocus > -1) {
-                if (x) x[currentFocus].click();
-            }
-        }
-    });
-    function addActive(x) {
-        if (!x) return false;
-        removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
-        x[currentFocus].classList.add("autocomplete-active");
-    }
-    function removeActive(x) {
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
-    }
-    function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-                x[i].parentNode.removeChild(x[i]);
-            }
-        }
-    }
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-    });
-}
-
-let symbols = [];
-
-async function fetchSymbols(query) {
-    try {
-        const response = await fetch(`${BASE_URL}/search?q=${query}&token=${API_KEY}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.result.map(item => `${item.symbol} - ${item.description}`);
-    } catch (error) {
-        console.error("Error fetching symbols:", error);
-        return [];
-    }
-}
-
-document.getElementById("symbol-input").addEventListener("input", async function(e) {
-    if (this.value.length > 1) {
-        symbols = await fetchSymbols(this.value);
-        autocomplete(this, symbols);
-    }
-});
-
-// Add Asset Form Submission
-document.getElementById("add-asset-form").addEventListener("submit", async function(e) {
+// Add Activity Form Submission
+document.getElementById("add-activity-form").addEventListener("submit", async function(e) {
     e.preventDefault();
-    const transactionType = document.getElementById("transaction-type").value;
-    const transactionDate = document.getElementById("transaction-date").value;
-    const symbol = document.getElementById("symbol-input").value.split(" - ")[0];
-    const shares = parseFloat(document.getElementById("shares-input").value);
-    const price = parseFloat(document.getElementById("price-input").value);
+    const date = document.getElementById("activity-date").value;
+    const symbol = document.getElementById("symbol-input").value.toUpperCase();
+    const quantity = parseFloat(document.getElementById("quantity-input").value);
+    const activityType = document.getElementById("activity-type").value;
+    const unitPrice = parseFloat(document.getElementById("price-input").value);
+    const currency = document.getElementById("currency-input").value.toUpperCase();
     const fee = parseFloat(document.getElementById("fee-input").value);
 
     try {
-        const [quoteData, companyData] = await Promise.all([
-            fetchQuote(symbol),
-            fetchCompanyProfile(symbol)
-        ]);
-
-        if (!quoteData || !companyData) {
-            throw new Error("Failed to fetch stock data");
-        }
-
-        const name = companyData.name || "Unknown";
-        const currentPrice = quoteData.c || 0;
-        const assetType = "Equity";
-        const sector = companyData.finnhubIndustry || "Unknown";
-
-        await backend.addTransaction(transactionType, transactionDate, symbol, name, shares, price, fee, currentPrice, assetType, sector);
-        
-        modal.style.display = "none";
+        await backend.addActivity(date, symbol, quantity, activityType, unitPrice, currency, fee);
+        addManuallyModal.style.display = "none";
         fetchData(); // Refresh the data
     } catch (error) {
-        console.error("Error adding asset:", error);
-        alert("Error adding asset. Please try again.");
+        console.error("Error adding activity:", error);
+        alert("Error adding activity. Please try again.");
     }
 });
 
-async function fetchQuote(symbol) {
-    try {
-        const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${API_KEY}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching quote:", error);
-        return null;
+// CSV Upload
+const dropZone = document.getElementById('csv-drop-zone');
+const fileInput = document.getElementById('csv-file-input');
+const importBtn = document.getElementById('import-csv-btn');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    fileInput.files = e.dataTransfer.files;
+    validateCSV(fileInput.files[0]);
+});
+
+fileInput.addEventListener('change', () => {
+    validateCSV(fileInput.files[0]);
+});
+
+function validateCSV(file) {
+    if (file && file.type === 'text/csv') {
+        importBtn.disabled = false;
+    } else {
+        importBtn.disabled = true;
+        alert('Please select a valid CSV file.');
     }
 }
 
-async function fetchCompanyProfile(symbol) {
-    try {
-        const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+importBtn.addEventListener('click', async () => {
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+        const csv = e.target.result;
+        const activities = parseCSV(csv);
+        
+        try {
+            await backend.importActivities(activities);
+            uploadCSVModal.style.display = "none";
+            fetchData(); // Refresh the data
+            alert('CSV imported successfully!');
+        } catch (error) {
+            console.error("Error importing CSV:", error);
+            alert("Error importing CSV. Please check the file format and try again.");
         }
-        return await response.json();
-    } catch (error) {
-        console.error("Error fetching company profile:", error);
-        return null;
+    };
+
+    reader.readAsText(file);
+});
+
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const activities = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+            const [date, symbol, quantity, activityType, unitPrice, currency, fee] = line.split(',');
+            activities.push({
+                date,
+                symbol,
+                quantity: parseFloat(quantity),
+                activityType,
+                unitPrice: parseFloat(unitPrice),
+                currency,
+                fee: parseFloat(fee)
+            });
+        }
     }
+
+    return activities;
 }
 
 // Initial data fetch

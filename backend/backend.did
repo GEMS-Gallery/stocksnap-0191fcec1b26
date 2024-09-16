@@ -1,29 +1,16 @@
-type Transaction = 
+type Activity = 
  record {
-   assetType: text;
-   currentPrice: float64;
+   activityType: text;
+   currency: text;
    date: int;
    fee: float64;
-   name: text;
-   price: float64;
-   sector: text;
-   shares: float64;
-   symbol: text;
-   transactionType: text;
- };
-type Holding = 
- record {
-   assetType: text;
-   currentPrice: float64;
-   name: text;
-   purchasePrice: float64;
    quantity: float64;
-   sector: text;
    symbol: text;
+   unitPrice: float64;
  };
 service : {
-  addTransaction: (text, text, text, text, float64, float64, float64,
-   float64, text, text) -> ();
+  addActivity: (text, text, float64, text, float64, text, float64) -> ();
+  getActivities: () -> (vec Activity) query;
   getAllocations: () ->
    (record {
       cash: float64;
@@ -31,6 +18,5 @@ service : {
       equity: float64;
       fixedIncome: float64;
     }) query;
-  getHoldings: () -> (vec Holding) query;
-  getTransactions: () -> (vec Transaction) query;
+  importActivities: (vec Activity) -> ();
 }
