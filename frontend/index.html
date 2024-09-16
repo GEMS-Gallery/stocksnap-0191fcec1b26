@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Holding App</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Stock Holding App</h1>
+        <form id="stockForm">
+            <input type="text" id="symbolInput" placeholder="Enter stock symbol" required>
+            <button type="submit">Get Stock Info</button>
+        </form>
+        <div id="stockInfo"></div>
+        <div id="addHolding" style="display:none;">
+            <input type="number" id="quantityInput" placeholder="Enter quantity" step="0.01" min="0" required>
+            <button id="addHoldingBtn">Add Holding</button>
+        </div>
+        <h2>Your Holdings</h2>
+        <div id="holdings"></div>
+    </div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>

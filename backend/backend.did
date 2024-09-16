@@ -1,0 +1,7 @@
+service : {
+  addHolding: (text, float64) -> ();
+  getHoldings: () -> (vec record {
+                            text;
+                            float64;
+                          }) query;
+}
