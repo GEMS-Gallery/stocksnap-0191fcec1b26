@@ -35,7 +35,9 @@ export const idlFactory = ({ IDL }) => {
         ],
         ['query'],
       ),
+    'getBaseCurrency' : IDL.Func([], [IDL.Text], ['query']),
     'importActivities' : IDL.Func([IDL.Vec(Activity)], [], []),
+    'setBaseCurrency' : IDL.Func([IDL.Text], [], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

@@ -26,7 +26,9 @@ export interface _SERVICE {
       'equity' : number,
     }
   >,
+  'getBaseCurrency' : ActorMethod<[], string>,
   'importActivities' : ActorMethod<[Array<Activity>], undefined>,
+  'setBaseCurrency' : ActorMethod<[string], undefined>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

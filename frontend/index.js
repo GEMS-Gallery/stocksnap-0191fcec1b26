@@ -9,10 +9,12 @@ feather.replace();
 let activities = [];
 let allocations = {};
 let charts = {};
+let baseCurrency = "USD";
 
 async function fetchData() {
     activities = await backend.getActivities();
     allocations = await backend.getAllocations();
+    baseCurrency = await backend.getBaseCurrency();
     updateUI();
 }
 
@@ -20,6 +22,7 @@ function updateUI() {
     updateActivityTable();
     updateHoldingsGrid();
     updateCharts();
+    updateCurrencyDisplay();
 }
 
 function updateActivityTable() {
@@ -32,7 +35,7 @@ function updateActivityTable() {
         const value = activity.quantity * activity.unitPrice;
         row.innerHTML = `
             <td>${date.toLocaleString()}</td>
-            <td><span class="activity-type">${activity.activityType}</span></td>
+            <td><span class="activity-type ${activity.activityType}">${activity.activityType}</span></td>
             <td>${activity.symbol}</td>
             <td>${activity.quantity.toFixed(4)}</td>
             <td>${activity.unitPrice.toFixed(2)} ${activity.currency}</td>
@@ -87,6 +90,11 @@ function updateSectorsChart() {
     // Implement this function based on your data structure
 }
 
+function updateCurrencyDisplay() {
+    document.getElementById('base-currency').value = baseCurrency;
+    // Update other currency displays in the UI
+}
+
 const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -103,7 +111,7 @@ const chartOptions = {
 };
 
 function showPage(pageName) {
-    const pages = document.querySelectorAll('#activity-page, #allocations-page');
+    const pages = document.querySelectorAll('#activity-page, #allocations-page, #settings-page');
     const tabs = document.querySelectorAll('.tab');
     
     pages.forEach(page => {
@@ -124,6 +132,7 @@ function showPage(pageName) {
 // Add event listeners for tabs
 document.getElementById('activity-tab').addEventListener('click', () => showPage('activity'));
 document.getElementById('allocations-tab').addEventListener('click', () => showPage('allocations'));
+document.getElementById('settings-tab').addEventListener('click', () => showPage('settings'));
 
 // Add Manually Modal
 const addManuallyModal = document.getElementById("add-manually-modal");
@@ -261,6 +270,20 @@ function parseCSV(csv) {
 
     return activities;
 }
+
+// Settings
+document.getElementById('save-settings').addEventListener('click', async () => {
+    const newBaseCurrency = document.getElementById('base-currency').value;
+    try {
+        await backend.setBaseCurrency(newBaseCurrency);
+        baseCurrency = newBaseCurrency;
+        updateUI();
+        alert('Settings saved successfully!');
+    } catch (error) {
+        console.error("Error saving settings:", error);
+        alert("Error saving settings. Please try again.");
+    }
+});
 
 // Initial data fetch
 fetchData();

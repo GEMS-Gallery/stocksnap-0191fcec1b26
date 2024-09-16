@@ -18,5 +18,7 @@ service : {
       equity: float64;
       fixedIncome: float64;
     }) query;
+  getBaseCurrency: () -> (text) query;
   importActivities: (vec Activity) -> ();
+  setBaseCurrency: (text) -> ();
 }

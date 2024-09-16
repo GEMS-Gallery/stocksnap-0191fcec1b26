@@ -25,6 +25,7 @@ actor {
 
   stable var activitiesEntries : [Activity] = [];
   var activities : [Activity] = [];
+  stable var baseCurrency : Text = "USD";
 
   public func addActivity(date: Text, symbol: Text, quantity: Float, activityType: Text, unitPrice: Float, currency: Text, fee: Float) : async () {
     let activity : Activity = {
@@ -87,6 +88,13 @@ actor {
       cash = if (total > 0) cash / total * 100 else 0;
       crypto = if (total > 0) crypto / total * 100 else 0;
     }
+  };
+
+  public func setBaseCurrency(currency: Text) : async () {
+    baseCurrency := currency;};
+
+  public query func getBaseCurrency() : async Text {
+    baseCurrency
   };
 
   func textToTimestamp(dateText: Text) : Int {

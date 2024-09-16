@@ -17,7 +17,7 @@
             <div class="sidebar-icon" data-feather="bar-chart-2"></div>
             <div class="sidebar-icon" data-feather="mail"></div>
             <div class="sidebar-icon" data-feather="folder"></div>
-            <div class="sidebar-icon" data-feather="settings"></div>
+            <div class="sidebar-icon" data-feather="settings" id="settings-icon"></div>
         </div>
         <div class="main-content">
             <div class="header">
@@ -36,6 +36,7 @@
             <div class="tabs">
                 <span class="tab active" id="activity-tab">Activity</span>
                 <span class="tab" id="allocations-tab">Allocations</span>
+                <span class="tab" id="settings-tab">Settings</span>
             </div>
             <div id="activity-page" class="active">
                 <table class="activity-table">
@@ -79,6 +80,21 @@
                 <div id="holdings-grid" class="holdings-grid">
                     <!-- Holdings grid items will be dynamically inserted here -->
                 </div>
+            </div>
+            <div id="settings-page">
+                <h2>General Settings</h2>
+                <div class="setting-item">
+                    <label for="base-currency">Base Currency:</label>
+                    <select id="base-currency">
+                        <option value="USD">USD - United States Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="CAD">CAD - Canadian Dollar</option>
+                        <!-- Add more currency options as needed -->
+                    </select>
+                </div>
+                <button id="save-settings">Save Settings</button>
             </div>
         </div>
     </div>
