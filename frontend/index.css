@@ -75,6 +75,33 @@ body, html {
 .page.active {
     display: block;
 }
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-family: 'Roboto Mono', monospace;
+}
+.tab button:hover {
+    background-color: #ddd;
+}
+.tab button.active {
+    background-color: #ccc;
+}
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
 .charts-container {
     display: flex;
     flex-wrap: wrap;
@@ -96,48 +123,12 @@ body, html {
     position: relative;
     height: 300px;
 }
-.holdings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-    background-color: #fff;
-    border: 1px solid #000;
-    border-radius: 4px;
-    padding: 20px;
-}
-.holding-item {
-    background-color: #f0f0f0;
-    border: 1px solid #000;
-    border-radius: 4px;
-    padding: 10px;
-    text-align: center;
-    font-size: 14px;
-}
-.holding-item.negative {
-    background-color: #ffe6e6;
-}
-.performance {
-    font-size: 12px;
-    margin-top: 5px;
-}
-.positive {
-    color: #008000;
-}
-.negative {
-    color: #ff0000;
-}
-.activity-table-container {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    overflow: hidden;
-}
-.activity-table {
+.holdings-table, .activity-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
 }
-.activity-table th {
+.holdings-table th, .activity-table th {
     background-color: #f0f0f0;
     font-weight: 700;
     text-align: left;
@@ -146,11 +137,11 @@ body, html {
     position: sticky;
     top: 0;
 }
-.activity-table td {
+.holdings-table td, .activity-table td {
     padding: 12px;
     border-bottom: 1px solid #eee;
 }
-.activity-table tr:last-child td {
+.holdings-table tr:last-child td, .activity-table tr:last-child td {
     border-bottom: none;
 }
 .activity-type {

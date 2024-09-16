@@ -7,20 +7,22 @@ const BASE_URL = "https://finnhub.io/api/v1";
 feather.replace();
 
 let activities = [];
+let holdings = [];
 let allocations = {};
 let charts = {};
 let baseCurrency = "USD";
 
 async function fetchData() {
     activities = await backend.getActivities();
+    holdings = await backend.getHoldings();
     allocations = await backend.getAllocations();
     baseCurrency = await backend.getBaseCurrency();
     updateUI();
 }
 
 function updateUI() {
+    updateHoldingsTable();
     updateActivityTable();
-    updateHoldingsGrid();
     updateCharts();
     updateCurrencyDisplay();
 }
@@ -40,6 +42,25 @@ function formatDate(timestamp) {
     const date = new Date(Number(timestamp) / 1000000);
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
+}
+
+async function updateHoldingsTable() {
+    const tableBody = document.getElementById('holdings-table-body');
+    tableBody.innerHTML = '';
+    
+    for (const holding of holdings) {
+        const row = document.createElement('tr');
+        const companyName = await getCompanyName(holding.symbol);
+        row.innerHTML = `
+            <td>${holding.symbol} - ${companyName}</td>
+            <td>${holding.quantity.toFixed(4)}</td>
+            <td>${holding.marketValue.toFixed(2)} ${baseCurrency}</td>
+            <td>${holding.marketPrice.toFixed(2)} ${baseCurrency}</td>
+            <td>${holding.performance.toFixed(2)}%</td>
+            <td>${holding.assetType}</td>
+        `;
+        tableBody.appendChild(row);
+    }
 }
 
 async function updateActivityTable() {
@@ -62,13 +83,6 @@ async function updateActivityTable() {
         `;
         tableBody.appendChild(row);
     }
-}
-
-function updateHoldingsGrid() {
-    const grid = document.getElementById('holdings-grid');
-    grid.innerHTML = '';
-    
-    // Implement this based on your holdings data structure
 }
 
 function updateCharts() {
@@ -146,6 +160,20 @@ function showPage(pageName) {
             item.classList.add('active');
         }
     });
+}
+
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
 }
 
 // Add event listeners for sidebar items
@@ -306,4 +334,5 @@ document.getElementById('save-settings').addEventListener('click', async () => {
 
 // Initial data fetch and page setup
 fetchData();
-showPage('holdings'); // Set initial page to Holdings
+showPage('holdings');
+document.querySelector('.tablinks').click();

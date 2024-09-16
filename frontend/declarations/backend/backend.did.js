@@ -8,6 +8,14 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Float64,
     'symbol' : IDL.Text,
   });
+  const Holding = IDL.Record({
+    'marketValue' : IDL.Float64,
+    'performance' : IDL.Float64,
+    'quantity' : IDL.Float64,
+    'assetType' : IDL.Text,
+    'marketPrice' : IDL.Float64,
+    'symbol' : IDL.Text,
+  });
   return IDL.Service({
     'addActivity' : IDL.Func(
         [
@@ -36,6 +44,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getBaseCurrency' : IDL.Func([], [IDL.Text], ['query']),
+    'getHoldings' : IDL.Func([], [IDL.Vec(Holding)], ['query']),
     'importActivities' : IDL.Func([IDL.Vec(Activity)], [], []),
     'setBaseCurrency' : IDL.Func([IDL.Text], [], []),
   });

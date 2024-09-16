@@ -23,6 +23,15 @@ actor {
     fee: Float;
   };
 
+  type Holding = {
+    symbol: Text;
+    quantity: Float;
+    marketValue: Float;
+    marketPrice: Float;
+    performance: Float;
+    assetType: Text;
+  };
+
   stable var activitiesEntries : [Activity] = [];
   var activities : [Activity] = [];
   stable var baseCurrency : Text = "USD";
@@ -46,6 +55,64 @@ actor {
 
   public query func getActivities() : async [Activity] {
     activities
+  };
+
+  public query func getHoldings() : async [Holding] {
+    var holdings = HashMap.HashMap<Text, Holding>(0, Text.equal, Text.hash);
+
+    for (activity in activities.vals()) {
+      switch (activity.activityType) {
+        case "BUY" {
+          let holding = switch (holdings.get(activity.symbol)) {
+            case (null) {
+              {
+                symbol = activity.symbol;
+                quantity = activity.shares;
+                marketValue = activity.shares * activity.price;
+                marketPrice = activity.price;
+                performance = 0 : Float;
+                assetType = "Equity";
+              }
+            };
+            case (?existingHolding) {
+              {
+                symbol = existingHolding.symbol;
+                quantity = existingHolding.quantity + activity.shares;
+                marketValue = existingHolding.marketValue + (activity.shares * activity.price);
+                marketPrice = activity.price;
+                performance = ((activity.price - existingHolding.marketPrice) / existingHolding.marketPrice) * 100;
+                assetType = existingHolding.assetType;
+              }
+            };
+          };
+          holdings.put(activity.symbol, holding);
+        };
+        case "SELL" {
+          switch (holdings.get(activity.symbol)) {
+            case (null) {};
+            case (?existingHolding) {
+              let newQuantity = existingHolding.quantity - activity.shares;
+              if (newQuantity > 0) {
+                let holding = {
+                  symbol = existingHolding.symbol;
+                  quantity = newQuantity;
+                  marketValue = newQuantity * activity.price;
+                  marketPrice = activity.price;
+                  performance = ((activity.price - existingHolding.marketPrice) / existingHolding.marketPrice) * 100;
+                  assetType = existingHolding.assetType;
+                };
+                holdings.put(activity.symbol, holding);
+              } else {
+                holdings.delete(activity.symbol);
+              };
+            };
+          };
+        };
+        case _ {};
+      };
+    };
+
+    Iter.toArray(holdings.vals())
   };
 
   public query func getAllocations() : async {equity: Float; fixedIncome: Float; cash: Float; crypto: Float} {

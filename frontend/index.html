@@ -27,6 +27,52 @@
             </div>
         </div>
         <div class="main-content">
+            <div id="holdings-page" class="page">
+                <h1>Holdings</h1>
+                <div class="tab">
+                    <button class="tablinks active" onclick="openTab(event, 'HoldingsTable')">Holdings</button>
+                    <button class="tablinks" onclick="openTab(event, 'Charts')">Charts</button>
+                </div>
+                <div id="HoldingsTable" class="tabcontent">
+                    <table class="holdings-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Market Value</th>
+                                <th>Market Price</th>
+                                <th>Performance</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="holdings-table-body">
+                            <!-- Holdings will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="Charts" class="tabcontent">
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>Allocation</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="allocationChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Classes</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="classesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Sectors</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="sectorsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="activity-page" class="page">
                 <div class="header">
                     <h1>Activity</h1>
@@ -59,32 +105,6 @@
                             <!-- Activities will be dynamically inserted here -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-            <div id="holdings-page" class="page">
-                <h1>Holdings</h1>
-                <div class="charts-container">
-                    <div class="chart-card">
-                        <h3>Allocation</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="allocationChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Classes</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="classesChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Sectors</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="sectorsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div id="holdings-grid" class="holdings-grid">
-                    <!-- Holdings grid items will be dynamically inserted here -->
                 </div>
             </div>
             <div id="settings-page" class="page">

@@ -11,6 +11,14 @@ export interface Activity {
   'price' : number,
   'symbol' : string,
 }
+export interface Holding {
+  'marketValue' : number,
+  'performance' : number,
+  'quantity' : number,
+  'assetType' : string,
+  'marketPrice' : number,
+  'symbol' : string,
+}
 export interface _SERVICE {
   'addActivity' : ActorMethod<
     [string, string, string, string, number, number, number],
@@ -27,6 +35,7 @@ export interface _SERVICE {
     }
   >,
   'getBaseCurrency' : ActorMethod<[], string>,
+  'getHoldings' : ActorMethod<[], Array<Holding>>,
   'importActivities' : ActorMethod<[Array<Activity>], undefined>,
   'setBaseCurrency' : ActorMethod<[string], undefined>,
 }
