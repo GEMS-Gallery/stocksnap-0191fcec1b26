@@ -12,6 +12,7 @@
 <body>
     <div class="container">
         <div class="sidebar">
+            <div class="sidebar-icon" data-feather="activity" id="activities-icon"></div>
             <div class="sidebar-icon" data-feather="grid"></div>
             <div class="sidebar-icon" data-feather="bar-chart-2"></div>
             <div class="sidebar-icon" data-feather="mail"></div>
@@ -33,20 +34,20 @@
                 </div>
             </div>
             <div class="tabs">
-                <span class="tab" id="activity-tab">Activity</span>
-                <span class="tab active" id="allocations-tab">Allocations</span>
+                <span class="tab active" id="activity-tab">Activity</span>
+                <span class="tab" id="allocations-tab">Allocations</span>
             </div>
-            <div id="activity-page">
+            <div id="activity-page" class="active">
                 <table class="activity-table">
                     <thead>
                         <tr>
                             <th>Date</th>
-                            <th>Symbol</th>
-                            <th>Activity Type</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Currency</th>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Shares</th>
+                            <th>Unit Price</th>
                             <th>Fee</th>
+                            <th>Value</th>
                         </tr>
                     </thead>
                     <tbody id="activity-table-body">
@@ -54,7 +55,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="allocations-page" class="active">
+            <div id="allocations-page">
                 <div class="charts-container">
                     <div class="chart-card">
                         <h3>Allocation</h3>

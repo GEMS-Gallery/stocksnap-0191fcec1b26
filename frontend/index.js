@@ -28,14 +28,16 @@ function updateActivityTable() {
     
     activities.forEach(activity => {
         const row = document.createElement('tr');
+        const date = new Date(Number(activity.date) / 1000000); // Convert BigInt to number
+        const value = activity.quantity * activity.unitPrice;
         row.innerHTML = `
-            <td>${new Date(activity.date / 1000000).toLocaleString()}</td>
+            <td>${date.toLocaleString()}</td>
+            <td><span class="activity-type">${activity.activityType}</span></td>
             <td>${activity.symbol}</td>
-            <td>${activity.activityType}</td>
             <td>${activity.quantity.toFixed(4)}</td>
-            <td>${activity.unitPrice.toFixed(2)}</td>
-            <td>${activity.currency}</td>
-            <td>${activity.fee.toFixed(2)}</td>
+            <td>${activity.unitPrice.toFixed(2)} ${activity.currency}</td>
+            <td>${activity.fee.toFixed(2)} ${activity.currency}</td>
+            <td>${value.toFixed(2)} ${activity.currency}</td>
         `;
         tableBody.appendChild(row);
     });
