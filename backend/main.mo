@@ -8,18 +8,30 @@ import Iter "mo:base/Iter";
 import Text "mo:base/Text";
 
 actor {
-  stable var holdingsEntries : [(Text, Float)] = [];
-  let holdings = HashMap.HashMap<Text, Float>(10, Text.equal, Text.hash);
-
-  public func addHolding(symbol: Text, quantity: Float) : async () {
-    let currentQuantity = switch (holdings.get(symbol)) {
-      case (null) { 0 : Float };
-      case (?value) { value };
-    };
-    holdings.put(symbol, currentQuantity + quantity);
+  type Holding = {
+    quantity: Float;
+    purchasePrice: Float;
   };
 
-  public query func getHoldings() : async [(Text, Float)] {
+  stable var holdingsEntries : [(Text, Holding)] = [];
+  let holdings = HashMap.HashMap<Text, Holding>(10, Text.equal, Text.hash);
+
+  public func addHolding(symbol: Text, quantity: Float, purchasePrice: Float) : async () {
+    let currentHolding = holdings.get(symbol);
+    let (newQuantity, newPurchasePrice) = switch (currentHolding) {
+      case (null) {
+        (quantity, purchasePrice)
+      };
+      case (?existing) {
+        let totalQuantity = existing.quantity + quantity;
+        let totalValue = existing.quantity * existing.purchasePrice + quantity * purchasePrice;
+        (totalQuantity, totalValue / totalQuantity)
+      };
+    };
+    holdings.put(symbol, { quantity = newQuantity; purchasePrice = newPurchasePrice });
+  };
+
+  public query func getHoldings() : async [(Text, Holding)] {
     Iter.toArray(holdings.entries())
   };
 
@@ -28,8 +40,8 @@ actor {
   };
 
   system func postupgrade() {
-    for ((symbol, quantity) in holdingsEntries.vals()) {
-      holdings.put(symbol, quantity);
+    for ((symbol, holding) in holdingsEntries.vals()) {
+      holdings.put(symbol, holding);
     };
   };
 }

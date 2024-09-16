@@ -1,7 +1,12 @@
+type Holding = 
+ record {
+   purchasePrice: float64;
+   quantity: float64;
+ };
 service : {
-  addHolding: (text, float64) -> ();
+  addHolding: (text, float64, float64) -> ();
   getHoldings: () -> (vec record {
                             text;
-                            float64;
+                            Holding;
                           }) query;
 }

@@ -4,6 +4,7 @@ const API_KEY = "crjpakpr01qnnbrso6l0crjpakpr01qnnbrso6lg";
 const BASE_URL = "https://finnhub.io/api/v1";
 
 let currentSymbol = "";
+let currentPrice = 0;
 
 document.getElementById("stockForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -14,6 +15,7 @@ document.getElementById("stockForm").addEventListener("submit", async (e) => {
             fetchQuote(symbol),
             fetchCompanyProfile(symbol)
         ]);
+        currentPrice = quoteData.c;
         displayStockInfo(quoteData, companyData);
         document.getElementById("addHolding").style.display = "block";
     } catch (error) {
@@ -25,9 +27,11 @@ document.getElementById("stockForm").addEventListener("submit", async (e) => {
 
 document.getElementById("addHoldingBtn").addEventListener("click", async () => {
     const quantity = parseFloat(document.getElementById("quantityInput").value);
-    if (quantity > 0) {
-        await backend.addHolding(currentSymbol, quantity);
+    const purchasePrice = parseFloat(document.getElementById("purchasePriceInput").value);
+    if (quantity > 0 && purchasePrice > 0) {
+        await backend.addHolding(currentSymbol, quantity, purchasePrice);
         document.getElementById("quantityInput").value = "";
+        document.getElementById("purchasePriceInput").value = "";
         updateHoldings();
     }
 });
@@ -57,9 +61,17 @@ async function updateHoldings() {
     if (holdings.length === 0) {
         holdingsDiv.innerHTML = "<p>No holdings yet.</p>";
     } else {
-        const holdingsList = holdings.map(([symbol, quantity]) => 
-            `<li>${symbol}: ${quantity.toFixed(2)} shares</li>`
-        ).join("");
+        const holdingsList = holdings.map(([symbol, holding]) => {
+            const currentValue = holding.quantity * currentPrice;
+            const purchaseValue = holding.quantity * holding.purchasePrice;
+            const performance = ((currentValue - purchaseValue) / purchaseValue) * 100;
+            return `<li>
+                ${symbol}: ${holding.quantity.toFixed(2)} shares
+                <br>Purchase Price: $${holding.purchasePrice.toFixed(2)}
+                <br>Current Value: $${currentValue.toFixed(2)}
+                <br>Performance: ${performance.toFixed(2)}%
+            </li>`;
+        }).join("");
         holdingsDiv.innerHTML = `<ul>${holdingsList}</ul>`;
     }
 }
