@@ -2,10 +2,10 @@ export const idlFactory = ({ IDL }) => {
   const Activity = IDL.Record({
     'fee' : IDL.Float64,
     'activityType' : IDL.Text,
+    'shares' : IDL.Float64,
     'date' : IDL.Int,
-    'currency' : IDL.Text,
-    'quantity' : IDL.Float64,
-    'unitPrice' : IDL.Float64,
+    'account' : IDL.Text,
+    'price' : IDL.Float64,
     'symbol' : IDL.Text,
   });
   return IDL.Service({
@@ -13,10 +13,10 @@ export const idlFactory = ({ IDL }) => {
         [
           IDL.Text,
           IDL.Text,
-          IDL.Float64,
+          IDL.Text,
           IDL.Text,
           IDL.Float64,
-          IDL.Text,
+          IDL.Float64,
           IDL.Float64,
         ],
         [],

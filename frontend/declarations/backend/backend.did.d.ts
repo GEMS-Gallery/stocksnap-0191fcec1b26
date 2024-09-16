@@ -5,15 +5,15 @@ import type { IDL } from '@dfinity/candid';
 export interface Activity {
   'fee' : number,
   'activityType' : string,
+  'shares' : number,
   'date' : bigint,
-  'currency' : string,
-  'quantity' : number,
-  'unitPrice' : number,
+  'account' : string,
+  'price' : number,
   'symbol' : string,
 }
 export interface _SERVICE {
   'addActivity' : ActorMethod<
-    [string, string, number, string, number, string, number],
+    [string, string, string, string, number, number, number],
     undefined
   >,
   'getActivities' : ActorMethod<[], Array<Activity>>,

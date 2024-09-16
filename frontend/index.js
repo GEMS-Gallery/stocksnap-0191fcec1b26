@@ -32,15 +32,16 @@ function updateActivityTable() {
     activities.forEach(activity => {
         const row = document.createElement('tr');
         const date = new Date(Number(activity.date) / 1000000); // Convert BigInt to number
-        const value = activity.quantity * activity.unitPrice;
+        const value = activity.shares * activity.price;
         row.innerHTML = `
             <td>${date.toLocaleString()}</td>
             <td><span class="activity-type ${activity.activityType}">${activity.activityType}</span></td>
+            <td>${activity.account}</td>
             <td>${activity.symbol}</td>
-            <td>${activity.quantity.toFixed(4)}</td>
-            <td>${activity.unitPrice.toFixed(2)} ${activity.currency}</td>
-            <td>${activity.fee.toFixed(2)} ${activity.currency}</td>
-            <td>${value.toFixed(2)} ${activity.currency}</td>
+            <td>${activity.shares.toFixed(4)}</td>
+            <td>${activity.price.toFixed(2)} ${baseCurrency}</td>
+            <td>${activity.fee.toFixed(2)} ${baseCurrency}</td>
+            <td>${value.toFixed(2)} ${baseCurrency}</td>
         `;
         tableBody.appendChild(row);
     });
@@ -172,16 +173,16 @@ window.onclick = function(event) {
 // Add Activity Form Submission
 document.getElementById("add-activity-form").addEventListener("submit", async function(e) {
     e.preventDefault();
+    const account = document.getElementById("account-input").value;
+    const activityType = document.getElementById("activity-type").value;
     const date = document.getElementById("activity-date").value;
     const symbol = document.getElementById("symbol-input").value.toUpperCase();
-    const quantity = parseFloat(document.getElementById("quantity-input").value);
-    const activityType = document.getElementById("activity-type").value;
-    const unitPrice = parseFloat(document.getElementById("price-input").value);
-    const currency = document.getElementById("currency-input").value.toUpperCase();
+    const shares = parseFloat(document.getElementById("shares-input").value);
+    const price = parseFloat(document.getElementById("price-input").value);
     const fee = parseFloat(document.getElementById("fee-input").value);
 
     try {
-        await backend.addActivity(date, symbol, quantity, activityType, unitPrice, currency, fee);
+        await backend.addActivity(account, activityType, date, symbol, shares, price, fee);
         addManuallyModal.style.display = "none";
         fetchData(); // Refresh the data
     } catch (error) {
@@ -255,14 +256,14 @@ function parseCSV(csv) {
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line) {
-            const [date, symbol, quantity, activityType, unitPrice, currency, fee] = line.split(',');
+            const [date, account, symbol, shares, activityType, price, fee] = line.split(',');
             activities.push({
                 date,
+                account,
                 symbol,
-                quantity: parseFloat(quantity),
+                shares: parseFloat(shares),
                 activityType,
-                unitPrice: parseFloat(unitPrice),
-                currency,
+                price: parseFloat(price),
                 fee: parseFloat(fee)
             });
         }

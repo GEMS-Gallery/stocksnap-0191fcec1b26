@@ -15,11 +15,11 @@ import Time "mo:base/Time";
 actor {
   type Activity = {
     date: Int;
+    account: Text;
     symbol: Text;
-    quantity: Float;
+    shares: Float;
     activityType: Text;
-    unitPrice: Float;
-    currency: Text;
+    price: Float;
     fee: Float;
   };
 
@@ -27,14 +27,14 @@ actor {
   var activities : [Activity] = [];
   stable var baseCurrency : Text = "USD";
 
-  public func addActivity(date: Text, symbol: Text, quantity: Float, activityType: Text, unitPrice: Float, currency: Text, fee: Float) : async () {
+  public func addActivity(account: Text, activityType: Text, date: Text, symbol: Text, shares: Float, price: Float, fee: Float) : async () {
     let activity : Activity = {
       date = textToTimestamp(date);
+      account = account;
       symbol = symbol;
-      quantity = quantity;
+      shares = shares;
       activityType = activityType;
-      unitPrice = unitPrice;
-      currency = currency;
+      price = price;
       fee = fee;
     };
     activities := Array.append(activities, [activity]);
@@ -55,7 +55,7 @@ actor {
     var crypto : Float = 0;
 
     for (activity in activities.vals()) {
-      let value = activity.quantity * activity.unitPrice;
+      let value = activity.shares * activity.price;
       switch (activity.activityType) {
         case "BUY" {
           if (activity.symbol == "$CASH-USD") {
@@ -73,10 +73,6 @@ actor {
         };
         case "DEPOSIT" { cash += value };
         case "WITHDRAWAL" { cash -= value };
-        case "TRANSFER_IN" { cash += value };
-        case "TRANSFER_OUT" { cash -= value };
-        case "CONVERSION_IN" { cash += value };
-        case "CONVERSION_OUT" { cash -= value };
         case _ {};
       };
     };
@@ -99,7 +95,7 @@ actor {
   };
 
   func textToTimestamp(dateText: Text) : Int {
-    // This is a simplified conversion. You mightwant to use a proper date library.
+    // This is a simplified conversion. You might want to use a proper date library.
     let parts = Iter.toArray(Text.split(dateText, #text("T")));
     if (parts.size() == 2) {
       let dateParts = Iter.toArray(Text.split(parts[0], #text("-")));
@@ -110,8 +106,7 @@ actor {
         // This is a very rough approximation. Use a proper date library for accurate results.
         return (year * 365 * 24 * 3600 + month * 30 * 24 * 3600 + day * 24 * 3600) * 1_000_000_000;
       };
-    };
-    return 0; // Return 0 if conversion fails
+    };return 0; // Return 0 if conversion fails
   };
 
   func textToNat(t: Text) : Nat {

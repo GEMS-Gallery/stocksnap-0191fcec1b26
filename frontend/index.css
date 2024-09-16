@@ -154,9 +154,9 @@ body, html {
 .activity-type.SELL { background-color: #ffebee; color: #f44336; }
 .activity-type.DIVIDEND { background-color: #e3f2fd; color: #2196f3; }
 .activity-type.INTEREST { background-color: #fff3e0; color: #ff9800; }
-.activity-type.DEPOSIT, .activity-type.TRANSFER_IN, .activity-type.CONVERSION_IN { background-color: #f3e5f5; color: #9c27b0; }
-.activity-type.WITHDRAWAL, .activity-type.TRANSFER_OUT, .activity-type.CONVERSION_OUT { background-color: #fce4ec; color: #e91e63; }
-.activity-type.FEE, .activity-type.TAX { background-color: #efebe9; color: #795548; }
+.activity-type.DEPOSIT { background-color: #f3e5f5; color: #9c27b0; }
+.activity-type.WITHDRAWAL { background-color: #fce4ec; color: #e91e63; }
+.activity-type.FEE { background-color: #efebe9; color: #795548; }
 .modal {
     display: none;
     position: fixed;
