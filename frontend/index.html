@@ -12,9 +12,19 @@
 <body>
     <div class="container">
         <div class="sidebar">
-            <div class="sidebar-icon" data-feather="activity" id="activity-icon" data-page="activity"></div>
-            <div class="sidebar-icon" data-feather="pie-chart" id="holdings-icon" data-page="holdings"></div>
-            <div class="sidebar-icon" data-feather="settings" id="settings-icon" data-page="settings"></div>
+            <div class="app-name">Portfolio Tracker</div>
+            <div class="sidebar-item" data-page="holdings">
+                <div class="sidebar-icon" data-feather="pie-chart"></div>
+                <span>Holdings</span>
+            </div>
+            <div class="sidebar-item" data-page="activity">
+                <div class="sidebar-icon" data-feather="activity"></div>
+                <span>Activities</span>
+            </div>
+            <div class="sidebar-item" data-page="settings">
+                <div class="sidebar-icon" data-feather="settings"></div>
+                <span>Settings</span>
+            </div>
         </div>
         <div class="main-content">
             <div id="activity-page" class="page">

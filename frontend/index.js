@@ -112,7 +112,7 @@ const chartOptions = {
 
 function showPage(pageName) {
     const pages = document.querySelectorAll('.page');
-    const icons = document.querySelectorAll('.sidebar-icon');
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
     
     pages.forEach(page => {
         page.classList.remove('active');
@@ -121,17 +121,17 @@ function showPage(pageName) {
         }
     });
 
-    icons.forEach(icon => {
-        icon.classList.remove('active');
-        if (icon.dataset.page === pageName) {
-            icon.classList.add('active');
+    sidebarItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === pageName) {
+            item.classList.add('active');
         }
     });
 }
 
-// Add event listeners for sidebar icons
-document.querySelectorAll('.sidebar-icon').forEach(icon => {
-    icon.addEventListener('click', () => showPage(icon.dataset.page));
+// Add event listeners for sidebar items
+document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.addEventListener('click', () => showPage(item.dataset.page));
 });
 
 // Add Manually Modal
@@ -287,4 +287,4 @@ document.getElementById('save-settings').addEventListener('click', async () => {
 
 // Initial data fetch and page setup
 fetchData();
-showPage('activity'); // Set initial page to Activity
+showPage('holdings'); // Set initial page to Holdings
