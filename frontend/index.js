@@ -1,5 +1,8 @@
 import { backend } from "declarations/backend";
 
+const API_KEY = "crjpakpr01qnnbrso6l0crjpakpr01qnnbrso6lg";
+const BASE_URL = "https://finnhub.io/api/v1";
+
 // Initialize Feather Icons
 feather.replace();
 
@@ -131,6 +134,58 @@ function showPage(pageName) {
 // Add event listeners for tabs
 document.getElementById('holdings-tab').addEventListener('click', () => showPage('holdings'));
 document.getElementById('allocations-tab').addEventListener('click', () => showPage('allocations'));
+
+// Add Asset Modal
+const modal = document.getElementById("add-asset-modal");
+const btn = document.getElementById("add-asset-btn");
+const span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+// Add Asset Form Submission
+document.getElementById("add-asset-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const symbol = document.getElementById("symbol-input").value.toUpperCase();
+    const quantity = parseFloat(document.getElementById("quantity-input").value);
+    const purchasePrice = parseFloat(document.getElementById("purchase-price-input").value);
+
+    try {
+        const [quoteData, companyData] = await Promise.all([
+            fetchQuote(symbol),
+            fetchCompanyProfile(symbol)
+        ]);
+
+        await backend.addHolding(symbol, companyData.name, quantity, purchasePrice, quoteData.c, "Equity", companyData.finnhubIndustry);
+        
+        modal.style.display = "none";
+        fetchData(); // Refresh the data
+    } catch (error) {
+        console.error("Error adding asset:", error);
+        alert("Error adding asset. Please try again.");
+    }
+});
+
+async function fetchQuote(symbol) {
+    const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${API_KEY}`);
+    return response.json();
+}
+
+async function fetchCompanyProfile(symbol) {
+    const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${API_KEY}`);
+    return response.json();
+}
 
 // Initial data fetch
 fetchData();

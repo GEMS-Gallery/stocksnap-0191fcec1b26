@@ -21,7 +21,7 @@
         <div class="main-content">
             <div class="header">
                 <h1>Holdings</h1>
-                <button class="add-asset-btn">
+                <button class="add-asset-btn" id="add-asset-btn">
                     <i data-feather="plus"></i>
                     Add Asset
                 </button>
@@ -68,6 +68,21 @@
             </div>
         </div>
     </div>
+
+    <!-- Add Asset Modal -->
+    <div id="add-asset-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Asset</h2>
+            <form id="add-asset-form">
+                <input type="text" id="symbol-input" placeholder="Stock Symbol" required>
+                <input type="number" id="quantity-input" placeholder="Quantity" step="0.01" required>
+                <input type="number" id="purchase-price-input" placeholder="Purchase Price" step="0.01" required>
+                <button type="submit">Add Asset</button>
+            </form>
+        </div>
+    </div>
+
     <script src="index.js" type="module"></script>
 </body>
 </html>
